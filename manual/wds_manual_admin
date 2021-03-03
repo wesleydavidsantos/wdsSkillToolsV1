@@ -1,0 +1,509 @@
+                .-"""-. 
+               / .===. \ 
+               \/ 6 6 \/ 
+               ( \___/ ) 
+  _________ooo__\_____/______________ 
+ /                                   \ 
+|    DATABASE AND SERVER MONITORING   | 
+|              BY TELEGRAM            |
+|                                     | 
+|    Author: Wesley David Santos      | 
+|    Skype:  wesleydavidsantos        | 
+|                                     | 
+ \_______________________ooo_________/ 
+                |  |  | 
+                |_ | _| 
+                |  |  | 
+                |__|__| 
+                /- Y -\ 
+               (__/ \__) 
+
+# ----------------------------------------------- #
+#      +++ wdsSkillToolsV1 +++ 
+# Manual de Uso da Aplicação
+# Nível: ADMIN
+# --
+# Aplicação que permite via Telegram o Gerenciamento,
+# Monitoramento e Geração de relatórios em tempo
+# real de servidor Linux e Database Oracle.
+# ----------------------------------------------- #
+
+
+## SAIR - pressione q
+
+# ----------------------------------------------- #
+# ----- Instalação ------------------------------ #
+# ----------------------------------------------- #
+
+Instalar os pacotes abaixo:
+
+yum install jq.x86_64
+yum install expect.x86_64
+
+
+Crie um usuário de Sistema Operaciona chamado "wds_u" para executar a aplicação.
+
+Descompacte o arquivo no diretório desejado.
+
+Edite o aquivo .bash_profile e adicione as linhas abaixo
+
+WDS_SKILL_TOOLS=/home/wds_u/app_wds
+PATH=$PATH:$WDS_SKILL_TOOLS
+export PATH
+
+
+Atribuir as permissões sobre os arquivos
+chmod -R 755 /home/wds_u/app_wds
+
+
+Usuários banco de dados
+- Devem ser criados dois usuários no banco de dados.
+
+	Usuário: WDS_BASIC
+		- Para uso dos grupos CLIENTE / ANALISTA
+		- Você que define os GRANT que esse usuário deve possuir
+		
+	Usuário: WDS_ADMIN
+		- Para uso dos grupos DBA / ADMIN
+		- Você que define os GRANT que esse usuário deve possuir
+		
+	* Para usar estes usuários, você deve ativar o usuário dentro da aplicação wdsSkillToolsV1. Ao ativar será gerado uma senha que deve ser atribuída ao usuário no banco de dados.
+	Comando: db password reset +USERNAME
+	
+	* Atenção: Não esquece de atribuir a permissão de execução ao SQLPLUS. Exemplo: chmod o+x -R $ORACLE_HOME/bin/sqlplus { a permissão de execução deve estar em todos os diretórios até chegar no SQLPLUS }
+		
+
+
+# ----------------------------------------------- #
+# ----- Modo de Usar - Via TELEGRAM ------------- #
+# ----------------------------------------------- #
+
+Para usar via TELEGRAM, nível de usuário ANALISTA ou acima deve ser informado o nome do server antes do envio de cada comando, senão nenhuma informação será retornada.
+Exemplo: Nome_Cliente [ Comandos ]
+
+* Observação: Se setar o PIN em um determinado server, não é nessário informar o nome do server. O PIN é usado somente em um server de cada vez.
+
+IMPORTANTE:
+	Para enviar um comando para todos os servers de forma simultânea, substitua o nome do SERVER por ALL
+	
+	Exemplo, enviando um sinal de PING
+		all ping
+
+
+
+# ----------------------------------------------- #
+# ------ Comandos Via Prompt -------------------- #
+# ----------------------------------------------- #
+
+INSTALL APP
+	- Realiza a instalação da aplicação
+	
+REINSTALL APP
+	- Reinstala a aplicação, os diretórios são recriados
+	
+SERVER
+	- Lista os nomes registrados para o server, esses nomes são usados via telegram
+
+STARTUP
+	- Inicializa o Daemon. O Daemon deve ficar ativado para comunicação com o telegram
+
+STOPWDS
+	- Encerra o Daemon.
+	
+SYS
+	- Realiza o cadastro de usuários e senhas de acesso ao sistema operacional.
+	- Esses usuários são utilizados pelos comandos "-sys" e "-sysdba"
+	- É apresentado um Menu de ações: 01-Cadastrar - 02-Remover - 03-Listar	
+
+
+# ----------------------------------------------- #
+# -------- Comandos Via TELEGRAM ---------------- #
+# ----------------------------------------------- #
+
+PIN { NomeServer }
+	- Cria um atalho para o server, desta forma não é necessário sempre informar o nome do server para enviar os comandos.	
+	* Nível de acesso ANALISTA
+
+ping 
+	- Informa se wdsSkillToolsV1 está ativado
+	* Nível de acesso CLIENTE
+
+wds { chave acesso }
+	- Usado para registrar novos usuários.
+	- Peça ao usuário procurar o BOT do telegram e informar o comando + chave Exemplo: wds CHAVE
+	* Nível de acesso CLIENTE
+
+dba {
+	#
+	# Registra/Lista informações dos DBA que prestam atendimento ao Cliente, possibilitando ao Cliente acesso rápido aos contatos dos DBA e plantonista.
+	#
+	
+		p | plantao { NOME DBA PLANTÃO }
+			- Apresenta o DBA que está de plantão
+			- Também é usuado para registar um DBA como plantonista
+			* Nível de acesso CLIENTE / ADMIN (registrar plantão)
+			
+		list
+			- Lista dos DBAs e as informações de telefone
+			* Nível de acesso CLIENTE
+
+		add
+			- Adiciona um novo DBA
+			* Nível de acesso ADMIN
+
+		remove
+			- Remove um DBA
+			* Nível de acesso ADMIN
+}
+
+-sys {
+	#
+	# Usado para conectar com outro usuário de Sistema Operacional
+	#
+	
+	* Observações: 
+		- Comando especial que realiza a mudança de usuário "su - nameUser"
+		- Permite você realizar comandos através de outro usuário
+		- Para usar esse comando primeiro deve cadastrar o nome do usuário e a senha. Para realizar esse cadastro é somente via prompt de comando.
+		- Veja como configurar o nome do usuário dentro do manual, seção "Comandos Via Prompt"
+		
+		Como usar:
+			u:nameUser lista_comandos
+		
+		Exemplo:	
+			-sys u:oracle lsnrctl status
+}
+
+-sysdba { 
+	#
+	# Usado para enviar comandos de SQL para serem executados dentro do SQLPLUS com o usuário ORACLE
+	#
+
+	* Observações: 
+		- Comando especial que realiza a conexão com o usuário "oracle" e abre uma conexão via "sqlplus / as sysdba"
+		- Permite você realizar comandos dentro do SQLPLUS conectado como SYSDBA
+		- O banco de dados deve ser cadastrado previamente dentro desta aplicação.
+		- Deve ser informado o nome do banco de dados a ser usuado. 
+		- Para usar esse comando primeiro deve cadastrar o nome do usuário e a senha do ORACLE. Para realizar esse cadastro é somente via prompt de comando.
+		- Veja como configurar o nome do usuário dentro do manual, seção "Comandos Via Prompt"
+		
+		Como usar:		
+			nameDataBase comando
+	
+		Exemplo:	
+			-sysdba orcl startup
+}
+
+-chart {
+	#
+	# Usado para apresentar todos os tipos de Gráficos existentes para uso
+	#
+	
+		show
+			- Apresenta os tipos de gráficos existentes
+			* Nível de acesso CLIENTE
+	
+}
+	
+-s {
+	#
+	# Usado para cadastrar comandos SQL para serem usados posteriormente
+	#
+	
+		[
+			#> query_text
+				- Cadastra um novo script. Informe o caracter #> mais a query a ser executada
+				* Nível de acesso CLIENTE
+		]		
+		Exemplo:
+			-s #> select username from dba_users;
+
+		ou
+
+		[ 
+			anexar_arquivo
+				- Cadastra um novo script via anexo
+				* Nível de acesso CLIENTE
+		]		
+		Exemplo:
+			-s +anexo_script
+
+		ou
+
+		[
+			( opcional [ name:NomeScript ] [ group:GrupoAcesso ] ) #> query_text
+				- Cadastra um novo script. Informe o caracter #> mais a query a ser executada
+				* Nível de acesso CLIENTE
+		]		
+		Exemplo:
+			-s name:listuser #> select username from dba_users;
+			-s group:cliente #> select username from dba_users;
+			-s name:listuser group:cliente #> select username from dba_users;
+
+		ou
+
+		[
+			( opcional [ name:NomeScript ] [ group:GrupoAcesso ] ) anexar_arquivo
+				- Cadastra um novo script enviado via anexo
+				* Nível de acesso CLIENTE
+		]		
+		Exemplo:
+			-s name:listuser +anexo_script
+			-s group:cliente +anexo_script
+			-s name:listuser group:cliente +anexo_script
+}
+
+-f {
+	#
+	# Usado para criar uma formatação de resultados SQL
+	#
+	
+	[
+		[NOME_SCRIPT_SQL] FF FORMAT COLUMN_01 FF FORMAT COLUMN_02 FF FORMAT COLUMN_03
+		* Nível de acesso CLIENTE
+		* FF é usado como delimitador
+	
+	]
+	Exemplo: -f listuser FF COLUMN NAME FORMAT A50 FF COLUMN STATUS FORMAT A10
+	
+	ou
+
+	[ 
+		[NOME_SCRIPT_SQL] 
+		
+		anexar_arquivo
+			- Envia a formatação via anexo, cadastrar a formatação uma por linha
+			* Nível de acesso CLIENTE
+	]		
+	Exemplo: -f listuser +anexo_format
+	
+}
+
+-fd {
+	#
+	# Usado para deletar uma formatação de resultados SQL
+	#
+	
+	[
+		[NOME_SCRIPT_SQL]
+		* Nível de acesso CLIENTE
+	]
+	Exemplo: -fd listuser
+}
+
+-fs {
+	#
+	# Usado para exbir o código da formatação de resultados SQL
+	#
+	
+	[
+		[NOME_SCRIPT_SQL]
+		* Nível de acesso CLIENTE
+	]
+	Exemplo: -fs listuser
+}
+
+-c  {
+	 #
+	 # Usado para cadastrar / executar comandos de prompt de comando. O script 
+	 #
+	 
+		[
+			Command_CMD
+				- Executa o comando informado
+				* Nível de acesso DBA
+		]
+		Exemplo: (O comando é executado na mesma hora)
+			-c ps -ef|grep pmon
+
+		ou
+
+		[
+			anexar_arquivo
+				- Cadastra um novo script via anexo
+				* Nível de acesso DBA
+		]
+		Exemplo: (O comando é executado na mesma hora)
+			-c +anexar_arquivo
+
+		ou
+
+		[
+			( opcional [ name:NomeScript ] [ group:GrupoAcesso ] ) #> Command_CMD
+				- Cadastra um novo script via texto
+				* Nível de acesso DBA
+		]
+		Exemplo: (O comando é apenas armazenado)
+			-c name:listuser #> ps -ef|grep pmon
+			-c group:cliente #> ps -ef|grep pmon
+			-c name:listuser group:cliente #> ps -ef|grep pmon
+
+		ou
+
+		[
+			( opcional [ name:NomeScript ] [ group:GrupoAcesso ] ) anexar_arquivo
+				- Cadastra um novo script enviado via anexo
+				* Nível de acesso DBA
+		]
+		Exemplo: (O comando é apenas armazenado)
+			-c name:listuser +anexar_arquivo
+			-c group:cliente +anexar_arquivo
+			-c name:listuser group:cliente +anexar_arquivo
+}
+
+user {
+	  #
+	  # Usado para cadastrar / listar / gerar chaves para usuários desta aplicação
+	  #
+		
+		key [ show | create [ Nome_Grupo ] { opcional Código_Chave} ]
+			- [show] Apresenta todas as chaves de acesso
+			- [create [ Nome_Grupo ] { opcional Código_Chave} ] Cria uma nova chave. Opcional, você pode definir o nome da chave
+			* Nível de acesso ADMIN
+
+		list
+			- Lista de usuários cadastrados
+			* Nível de acesso ADMIN
+
+		delete { numero usuário }
+			- Exclui um usuário
+			* Nível de acesso ADMIN
+}
+
+lib {
+	 #
+	 # Usado para listar / deletar / apresentar o código fonte dos scripts cadastrados e executados no server
+	 #
+	 
+		list
+			- Lista as informações de todos os scripts cadastrados
+			* Nível de acesso ADMIN
+
+		show { nome_script }
+			- Apresenta o conteúdo do script solicitado
+			* Nível de acesso ADMIN
+
+		delete { nome_script }
+			- Excluí o script informado
+			* Nível de acesso ADMIN
+}
+
+server {
+		 #
+		 # Usuários do grupo ANALISTA / DBA / ADMIN devem informar o nome do server para poder executar algum comando, exceto quando um PIN for registrado.
+		 # Aqui você pode listar / cadastrar / remover nomes de acesso ao server. Cada server pode possuir vários nomes para ser reconhecido pela aplicação.
+		 #
+		  
+		show
+			- Apresenta os nomes de identificação do server
+			* Nível de acesso ANALISTA
+
+		add { novo_nome }
+			- Cadastra um novo nome para o server
+			* Nível de acesso ADMIN
+
+		remove { nome_cliente }
+			- Remove um determinado nome do server
+			* Nível de acesso ADMIN
+}
+
+db {
+	#
+	# Cadastro e configurações das conexões de acesso ao banco de dados
+	#
+	
+		list
+			- Lista as conexões cadastradas
+			* Nível de acesso ADMIN
+
+		addprd
+			- Adiciona uma nova conexão com o banco de dados, ambiente de produção			
+			* Nível de acesso ADMIN
+			
+			Informações conexão:
+				name:NomeConexao sid:NomeSid tns:NomeTns home:LocalHome
+			
+			Exemplo:
+				db addprd name:NomeConexao sid:NomeSid tns:NomeTns home:LocalHome
+			
+		addsml
+			- Adiciona uma nova conexão com o banco de dados, ambiente de simulação
+			* Nível de acesso ADMIN
+			
+			Informações conexão:
+				name:NomeConexao sid:NomeSid tns:NomeTns home:LocalHome
+				
+			Exemplo:
+				db addsml name:NomeConexao sid:NomeSid tns:NomeTns home:LocalHome
+
+		delete
+			- Excluí uma conexão com o banco de dados
+			* Nível de acesso ADMIN
+
+		password [ show | reset ]
+			- Configuração dos usuários  WDS_BASIC / WDS_ADMIN de conexão ao banco de dados. As senhas de conexão dos usuários devem ser geradas por esta aplicação.
+			
+			show [ admin | basic ]
+				- Apresenta a senha de conexão de banco de dados do usuário escolhido
+				* Nível de acesso ADMIN
+				
+			reset [ admin | basic ]
+				- Cria uma nova senha de conexão de banco de dados do usuário escolhido
+				* Nível de acesso ADMIN
+}
+
+
+
+# ----------------------------------------------- #
+# ------- Comandos dinâmicos - Nível CLIENTE ---- #
+# ----------------------------------------------- #
+
+/db_NomeConexaoBD_ScriptExecutar 
+	- Execução tipo SQL.
+	- Comando integrado, onde deve informar o nome da conexão com banco de dados e o nome do Script a ser executado.
+	* Nível de acesso CLIENTE { Nível superior pode usar desta forma quando o PIN estiver ativado }	
+	Exemplo: /db_PRD_meuscriptSql
+
+db-nomeConexaoBD Query_Text
+	- Execução tipo SQL.
+	- Informe o nome da conexão com banco de dados e em separado o nome do Script a ser executado.
+	* Nível de acesso CLIENTE  { Nível superior pode usar desta forma quando o PIN estiver ativado }	
+	Exemplo: db-PRD meuscriptSql
+
+/ScriptExecutar
+	- Execução tipo CMD.
+	- Informe apenas o nome do Script
+	* Nível de acesso CLIENTE { Nível superior pode usar desta forma quando o PIN estiver ativado }
+	Exemplo: /meuscriptShellScript
+	
+
+
+
+# ---------------------------------------------------- #
+# - Comandos dinâmicos - Nível ANALISTA / DBA / ADMIN - #
+# ---------------------------------------------------- #
+
+/NomeServer_db_NomeConexaoBD_ScriptExecutar 
+	- Execução tipo SQL.
+	- Comando integrado, onde deve informar o nome do server, nome da conexão com banco de dados e o nome do Script a ser executado.
+	* Nível de acesso ANALISTA / DBA / ADMIN
+	Exemplo: /MeuCliente_db_PRD_meuscriptSql
+	
+
+NomeServer db-nomeConexaoBD Query_Text
+	- Execução tipo SQL.
+	- Informe o nome do server, nome da conexão com banco de dados e em separado o nome do Script a ser executado.
+	* Nível de acesso ANALISTA / DBA / ADMIN
+	Exemplo: MeuCliente db-PRD meuscriptSql
+
+
+/NomeServer_ScriptExecutar
+	- Execução tipo CMD.
+	- Informe apenas o nome do server e nome do Script
+	* Nível de acesso ANALISTA / DBA / ADMIN
+	Exemplo: /MeuCliente_meuscriptShellScript
+
+
+# ----------------------------------------------- #
+
+## SAIR - pressione q

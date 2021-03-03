@@ -1,0 +1,187 @@
+#!/bin/bash
+################################################################################################################
+#//////////////////////////////////////////////////////////////////////////////////////////////////////////////#
+#//////////////////////////////////////////////////////////////////////////////////////////////////////////////#
+#/////////////////////////////// --- INICIO EXECUÇÃO DA APLICAÇÃO --- \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\#
+#\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\#
+#\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\#
+################################################################################################################
+
+
+# Criptografa o nome do arquivo
+criptNameFileBin()
+{
+	local salt="Wesley David Santos"
+	local name_original="${1}"
+	local name_file_cript=$( echo "${salt}${name_original}" | md5sum | cut -d ' ' -f 1 )
+	
+	echo "${name_file_cript}"	
+}
+
+
+#//////////////////////////////////////////////////////////////////////////////////////////////////////////////
+#//////////////////////////////////////////////////////////////////////////////////////////////////////////////
+#||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
+#||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
+#|--------------------------- Inicio Variáveis de Inicialização do Script ------------------------------------|
+#||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
+
+# Carrega bash_profile.
+if [ -f ${HOME}/.bash_profile ]; then
+	. ${HOME}/.bash_profile
+else
+	if [ -f ${HOME}/.profile ]; then
+		. ${HOME}/.profile
+	fi
+fi
+
+
+# Verifica se a variável do diretório de instalação foi declarada
+if [ -z "${WDS_SKILL_TOOLS}" ]; then
+	echo ''
+	echo "[ERROR] Declare e export o caminho da aplicacao na variavel WDS_SKILL_TOOLS no .bash_profile"
+	echo ''
+	exit 1
+fi
+
+
+# Nome do diretório onde a aplicação está instalada
+WDS_APP_DIRNAME="${WDS_SKILL_TOOLS}"
+export WDS_APP_DIRNAME
+	
+# Quantidade de argumentos repassados
+WDS_APP_COUNT_ARGS=$#
+export WDS_APP_COUNT_ARGS
+
+# Lista de argumentos repassados
+WDS_APP_LIST_ARGS=$*
+export WDS_APP_LIST_ARGS
+
+# Setando os argumentos em variáveis fixas de 1 à 9 mesmo se não existirem, todos os argumentos transformam em lowercase	
+WDS_APP_ARG_0=`basename "$0"`
+export WDS_APP_ARG_0
+
+WDS_APP_ARG_1="${1}"
+export WDS_APP_ARG_1
+
+WDS_APP_ARG_2="${2}"
+export WDS_APP_ARG_2
+
+WDS_APP_ARG_3="${3}"
+export WDS_APP_ARG_3
+
+WDS_APP_ARG_4="${4}"
+export WDS_APP_ARG_4
+
+WDS_APP_ARG_5="${5}"
+export WDS_APP_ARG_5
+
+WDS_APP_ARG_6="${6}"
+export WDS_APP_ARG_6
+
+WDS_APP_ARG_7="${7}"
+export WDS_APP_ARG_7
+
+WDS_APP_ARG_8="${8}"
+export WDS_APP_ARG_8
+
+WDS_APP_ARG_9="${9}"
+export WDS_APP_ARG_9
+
+
+# Diretório dos binários
+WDS_APP_DIRNAME_BIN="${WDS_APP_DIRNAME}/proc_wds/bin/"
+export WDS_APP_DIRNAME_BIN
+
+
+# Verifica se é a solicitação para instalar a aplicação
+if [ "${WDS_APP_ARG_1^^} ${WDS_APP_ARG_2^^}" = 'INSTALL APP' ]; then
+
+	name_file_bin="app_installed"
+	
+elif [ "${WDS_APP_ARG_1^^} ${WDS_APP_ARG_2^^}" = 'REINSTALL APP' ]; then
+
+	name_file_bin="app_reinstall"
+
+elif [ "${WDS_APP_ARG_1^^}" = "SYS"  ]; then
+	
+	name_file_bin="sys_user"	
+
+elif [ "${WDS_APP_ARG_1^^}" = "SERVER"  ]; then
+	
+	name_file_bin="serverName"
+
+elif [ "${WDS_APP_ARG_1^^}" = "STARTUP"  ]; then
+	
+	name_file_bin="startup"
+
+elif [ "${WDS_APP_ARG_1^^}" = "STOPWDS" ]; then
+
+	name_file_bin="stopwds"
+	
+elif [ "${WDS_APP_ARG_1^^}" = "RESULT_EXECUTE_LIB" ]; then
+	
+	# Nome do binário criptografado
+	name_cript=$( criptNameFileBin "lib_execute_result" )
+	
+	"${WDS_APP_DIRNAME_BIN}${name_cript}" "${WDS_APP_ARG_2}"
+	
+	exit 0
+
+elif [ "${WDS_APP_ARG_1^^}" = "ALERT" ]; then
+	
+	# Nome do binário criptografado
+	name_cript=$( criptNameFileBin "msg_alert_telegram" )
+	
+	"${WDS_APP_DIRNAME_BIN}${name_cript}" "${WDS_APP_ARG_2}" "${WDS_APP_ARG_3}" "${WDS_APP_ARG_4}"
+	
+	exit 0
+	
+elif [ "${WDS_APP_ARG_1^^}" = "TELEGRAM" ]; then
+	
+	WDS_ORIGEM_ACCESS='TELEGRAM'
+	export WDS_ORIGEM_ACCESS
+	
+	name_file_bin="hubTelegram"
+	
+elif [ "${WDS_APP_ARG_1^^}" = "--HELP" ] || [ "${WDS_APP_ARG_1^^}" = "-HELP" ]; then
+	
+	case "${WDS_APP_ARG_2^^}" in
+		
+		DBA)
+			name_file_bin="help_DBA"
+		;;
+		
+		ANALISTA)
+			name_file_bin="help_ANALISTA"
+		;;
+		
+		CLIENTE)
+			name_file_bin="help_CLIENTE"
+		;;
+		
+		*)
+			name_file_bin="help_ADMIN"
+		;;
+		
+	esac
+	
+else
+
+	name_file_bin="wds_questions"
+	
+fi
+
+# Nome do binário criptografado
+name_cript=$( criptNameFileBin "${name_file_bin}" )
+	
+# Realiza a chamada ao script
+"${WDS_APP_DIRNAME_BIN}${name_cript}"
+
+################################################################################################################
+#//////////////////////////////////////////////////////////////////////////////////////////////////////////////#
+#//////////////////////////////////////////////////////////////////////////////////////////////////////////////#
+#/////////////////////////////// --- FIM DO SCRIPT - WDS --- \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\#
+#\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\#
+#\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\#
+################################################################################################################	

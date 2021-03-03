@@ -1,0 +1,233 @@
+                .-"""-. 
+               / .===. \ 
+               \/ 6 6 \/ 
+               ( \___/ ) 
+  _________ooo__\_____/______________ 
+ /                                   \ 
+|    DATABASE AND SERVER MONITORING   | 
+|              BY TELEGRAM            |
+|                                     |
+|    Author: Wesley David Santos      | 
+|    Skype:  wesleydavidsantos        | 
+|                                     | 
+ \_______________________ooo_________/ 
+                |  |  | 
+                |_ | _| 
+                |  |  | 
+                |__|__| 
+                /- Y -\ 
+               (__/ \__) 
+
+# ----------------------------------------------- #
+#      +++ wdsSkillToolsV1 +++ 
+# Manual Completo de Uso da Aplicação
+# Nível: ANALISTA
+# --
+# Aplicação que permite via Telegram o Gerenciamento,
+# Monitoramento e Geração de relatórios em tempo
+# real de servidor Linux e Database Oracle.
+# ----------------------------------------------- #
+
+
+## SAIR - pressione q
+
+
+
+# ----------------------------------------------- #
+# ----- Modo de Usar - Via TELEGRAM ------------- #
+# ----------------------------------------------- #
+
+Para usar via TELEGRAM, nível de usuário ANALISTA ou acima deve ser informado o nome do server antes do envio de cada comando, senão nenhuma informação será retornada.
+Exemplo: Nome_Cliente [ Comandos ]
+
+* Observação: Se setar o PIN em um determinado server, não é nessário informar o nome do server. O PIN é usado somente em um server de cada vez.
+
+IMPORTANTE:
+	Para enviar um comando para todos os clientes de forma simultânea, substitua o nome do SERVER por ALL
+	
+	Exemplo, criando uma chave de acesso única para todos os servers: 
+		all ping
+
+
+
+# ----------------------------------------------- #
+# -------- Comandos Via TELEGRAM ---------------- #
+# ----------------------------------------------- #
+
+PIN [ NomeServer ]
+	- Cria um atalho para o server, desta forma não é necessário sempre informar o nome do server para enviar os comandos.	
+	* Nível de acesso ANALISTA
+ping 
+	- Informa se wdsSkillToolsV1 está ativado
+	* Nível de acesso CLIENTE
+
+wds { chave acesso }
+	- Usado para registrar novos usuários.
+	- Peça ao usuário procurar o BOT do telegram e informar o comando + chave Exemplo: wds CHAVE
+	* Nível de acesso CLIENTE
+
+dba {
+	#
+	# Registra/Lista informações dos DBA que prestam atendimento ao Cliente, possibilitando ao Cliente acesso rápido aos contatos dos DBA e plantonista.
+	#
+	
+		p | plantao 
+			- Apresenta o DBA que está de plantão
+			* Nível de acesso CLIENTE
+
+		list
+			- Lista dos DBAs e as informações de telefone
+			* Nível de acesso CLIENTE
+}
+	
+-s {
+	#
+	# Usado para cadastrar comandos SQL para serem usados posteriormente
+	#
+	
+		[
+			#> query_text
+				- Cadastra um novo script. Informe o caracter #> mais a query a ser executada
+				* Nível de acesso CLIENTE
+		]
+
+		ou
+
+		[ 
+			anexar_arquivo
+				- Cadastra um novo script via anexo
+				* Nível de acesso CLIENTE
+		]
+
+		ou
+
+		[
+			( opcional [ name:NomeScript ] [ group:GrupoAcesso ] ) #> query_text
+				- Cadastra um novo script. Informe o caracter #> mais a query a ser executada
+				* Nível de acesso CLIENTE
+		]
+
+		ou
+
+		[
+			( opcional [ name:NomeScript ] [ group:GrupoAcesso ] ) anexar_arquivo
+				- Cadastra um novo script enviado via anexo
+				* Nível de acesso CLIENTE
+		]
+}
+
+-f {
+	#
+	# Usado para criar uma formatação de resultados SQL
+	#
+	
+	[
+		[NOME_SCRIPT_SQL] FF FORMAT COLUMN_01 FF FORMAT COLUMN_02 FF FORMAT COLUMN_03
+		* Nível de acesso CLIENTE
+		* FF é usado como delimitador
+	
+	]
+	Exemplo: -f listuser FF COLUMN NAME FORMAT A50 FF COLUMN STATUS FORMAT A10
+	
+	ou
+
+	[ 
+		[NOME_SCRIPT_SQL] 
+		
+		anexar_arquivo
+			- Envia a formatação via anexo, cadastrar a formatação uma por linha
+			* Nível de acesso CLIENTE
+	]		
+	Exemplo: -f listuser +anexo_format
+	
+}
+
+-fd {
+	#
+	# Usado para deletar uma formatação de resultados SQL
+	#
+	
+	[
+		[NOME_SCRIPT_SQL]
+		* Nível de acesso CLIENTE
+	]
+	Exemplo: -fd listuser
+}
+
+-fs {
+	#
+	# Usado para exbir o código da formatação de resultados SQL
+	#
+	
+	[
+		[NOME_SCRIPT_SQL]
+		* Nível de acesso CLIENTE
+	]
+	Exemplo: -fs listuser
+}
+
+server {
+		 #
+		 # Usuários do grupo ANALISTA / DBA / ADMIN devem informar o nome do server para poder executar algum comando, exceto quando um PIN for registrado.
+		 # Aqui você pode listar nomes de acesso ao server. Cada server pode possuir vários nomes para ser reconhecido pela aplicação.
+		 #
+		 
+		show
+			- Apresenta os nomes de identificação do server
+			* Nível de acesso ANALISTA
+}
+
+
+# ----------------------------------------------- #
+# ------- Comandos dinâmicos - Nível CLIENTE ---- #
+# ----------------------------------------------- #
+
+/db_NomeConexaoBD_ScriptExecutar 
+	- Execução tipo SQL.
+	- Comando integrado, onde deve informar o nome da conexão com banco de dados e o nome do Script a ser executado.
+	* Nível de acesso CLIENTE { Nível superior pode usar desta forma quando o PIN estiver ativado }	
+	Exemplo: /db_PRD_meuscriptSql
+
+db-nomeConexaoBD Query_Text
+	- Execução tipo SQL.
+	- Informe o nome da conexão com banco de dados e em separado o nome do Script a ser executado.
+	* Nível de acesso CLIENTE  { Nível superior pode usar desta forma quando o PIN estiver ativado }	
+	Exemplo: db-PRD meuscriptSql
+
+/ScriptExecutar
+	- Execução tipo CMD.
+	- Informe apenas o nome do Script
+	* Nível de acesso CLIENTE { Nível superior pode usar desta forma quando o PIN estiver ativado }
+	Exemplo: /meuscriptShellScript
+	
+
+
+
+# ---------------------------------------------------- #
+# - Comandos dinâmicos - Nível ANALISTA / DBA / ADMIN - #
+# ---------------------------------------------------- #
+
+/NomeServer_db_NomeConexaoBD_ScriptExecutar 
+	- Execução tipo SQL.
+	- Comando integrado, onde deve informar o nome do server, nome da conexão com banco de dados e o nome do Script a ser executado.
+	* Nível de acesso ANALISTA / DBA / ADMIN
+	Exemplo: /MeuCliente_db_PRD_meuscriptSql
+	
+
+NomeServer db-nomeConexaoBD Query_Text
+	- Execução tipo SQL.
+	- Informe o nome do server, nome da conexão com banco de dados e em separado o nome do Script a ser executado.
+	* Nível de acesso ANALISTA / DBA / ADMIN
+	Exemplo: MeuCliente db-PRD meuscriptSql
+
+
+/NomeServer_ScriptExecutar
+	- Execução tipo CMD.
+	- Informe apenas o nome do server e nome do Script
+	* Nível de acesso ANALISTA / DBA / ADMIN
+	Exemplo: /MeuCliente_meuscriptShellScript
+
+
+# ----------------------------------------------- #
+
+## SAIR - pressione q

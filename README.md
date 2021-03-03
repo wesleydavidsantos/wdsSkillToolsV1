@@ -16,4 +16,8 @@ Grupos: ADMIN - DBA - ANALISTA - CLIENTE
 
 No vídeo contém Slides de apresentação de como instalar e utilizar a ferramenta, você pode realizar pausas para poder ler os Slides.
 
+Observação: Coloque suas credências do Telegram dentro dos arquivos binários
+
+Foi necessário a criação de vários arquivos binários para execução, pois em alguns ambientes não executa arquivos grandes.
+
 [![Watch the video](https://img.youtube.com/vi/-a2W9PicVjU/maxresdefault.jpg)](https://youtu.be/-a2W9PicVjU)

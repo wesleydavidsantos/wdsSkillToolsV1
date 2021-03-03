@@ -16,4 +16,4 @@ Grupos: ADMIN - DBA - ANALISTA - CLIENTE
 
 No vídeo contém Slides de apresentação de como instalar e utilizar a ferramenta, você pode realizar pausas para poder ler os Slides.
 
-<iframe width="560" height="315" src="https://www.youtube.com/embed/-a2W9PicVjU" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+[![Watch the video](https://img.youtube.com/vi/-a2W9PicVjU/maxresdefault.jpg)](https://youtu.be/-a2W9PicVjU)
